@@ -50,7 +50,7 @@ int main(){
 			x_of_y_min=vertices[i].first;
 		}
 		float slopeInverse=(float)(vertices[i].first-vertices[i-1].first)/(float)(vertices[i].second-vertices[i-1].second);	//(x2-x1)/(y2-y1)
-		if(!isinf(slopeInverse))	// if not checked then there weill be same two points and result will be incorrect
+		if(!isinf(slopeInverse))	// if not checked then there will be same two points and result will be incorrect
 			get[y_min].push_back(EdgeBucket(y_max,(float)x_of_y_min,slopeInverse));
 	}
 	
