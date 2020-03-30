@@ -12,54 +12,77 @@ int main(){
 	cout<<"Enter Point 2, x-co-ordinate: "; cin>>x2;
 	cout<<"Enter Point 2, y-co-ordinate: "; cin>>y2;
 	int dx=x2-x1,dy=y2-y1;
-	int a=dy,b=dx*-1;
-	
-	int dstart,dold_inc;
-	
-	// for gradual
-	dstart=2*a+b;
-	dold_inc=a;	// case <=0
-	
-	// for steap
-	dstart=a+2*b;
-	dold_inc=b;	// case <=0
-	 
-	int dold=dstart;
-	cout<<"a:"<<a<<" b:"<<b<<" dstart:"<<dstart<<"\n";
-	cout<<x1<<" "<<y1<<"\n";
-	int y=y1,x=x1;
+	float slope=(float)dy/(float)dx;
+	cout<<slope;
 	
 	int gd=DETECT,gm;
-	
 	initgraph(&gd,&gm,"C:\\TC\\BGI");
-	putpixel(x1,y1,RED);
 	
-//	for(int x=x1+1;x<=x2;x++){
-//		if(dold<=0)
-//			dold+=dold_inc;
-//		else{
-//			y++;
-//			dold+=a+b;
-//		}
-//		cout<<x<<" "<<y<<"\n";
-//		putpixel(x,y,RED);
-//	}
-	
-	for(int y=y1+1;y<=y2;y++){
-		if(dold>0)
-			dold+=dold_inc;
-		else{
-			x++;
-			dold+=a+b;
+	if(dx==0)		// vertical line
+		for(int y=min(y1,y2);y<=max(y1,y2);y++)
+			putpixel(x1,y,RED);
+			
+	else if(dy==0)	// horizontal line
+		for(int x=min(x1,x2);x<=max(x1,x2);x++)
+			putpixel(x,y1,RED);
+			
+	else{
+		int x=x1,y=y1;
+		if(slope>1){	// steep
+			if(slope>0){	// +ive slope
+				int D=dy-2*dx;
+				for(y=y1;y<=y2;y++){
+					putpixel(x,y,RED);
+					if(D<0){
+						x++;
+						D+=dy-dx;
+					}
+					else
+						D-=dx;
+				}
+			}
+			else{			// -ive slope
+				int D=2*dx-dy;
+				for(y=y1;y>=y2;y--){
+					putpixel(x,y,RED);
+					if(D>0){
+						x--;
+						D-=dy-dx;
+					}
+					else
+						D+=dx;
+				}
+			}
 		}
-		cout<<x<<" "<<y<<"\n";
-		putpixel(x,y,RED);
+		else{			// gradual
+			if(slope>0){	// +ive slope
+				int D=2*dy-dx;
+				for(x=x1;x<=x2;x++){
+					putpixel(x,y,RED);
+					if(D>0){
+						y++;
+						D+=dy-dx;
+					}
+					else
+						D+=dy;
+				}
+			}
+			else{			// -ive slope
+				int D=dx-2*dy;
+				for(x=x1;x>=x2;x--){
+					putpixel(x,y,RED);
+					if(D<0){
+						y++;
+						D-=dy+dx;
+					}
+					else
+						D+=dy;
+				}
+			}		
+		}
 	}
-	
-	
 	
 	getch();
 	closegraph();
 	return 0;
 }
-
