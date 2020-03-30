@@ -56,7 +56,7 @@ void plot(vector<int> arr1,vector<int> arr2){
 	closegraph();
 }
 
-Matrix getTranformationMatrix(){
+Matrix getTransformationMatrix(){
 	Matrix t(3,3);
 	float arr[][3]={
 		{1,0,0},
@@ -70,7 +70,7 @@ Matrix getTranformationMatrix(){
 }
 
 void translate(Matrix m[],int n,vector<int> p){
-	Matrix t=getTranformationMatrix();
+	Matrix t=getTransformationMatrix();
 	vector<int> points;
 	cout<<"\nEnter translation for x-coordinates: ";
 	cin>>t.arr[2][0];
@@ -89,7 +89,7 @@ void translate(Matrix m[],int n,vector<int> p){
 }
 
 void rotate(Matrix m[],int n,vector<int> p){
-	Matrix t=getTranformationMatrix();
+	Matrix t=getTransformationMatrix();
 	vector<int> points;
 	int r;
 	cout<<"\nEnter angle of rotation: ";
@@ -109,7 +109,7 @@ void rotate(Matrix m[],int n,vector<int> p){
 }
 
 void scale(Matrix m[],int n,vector<int> p){
-	Matrix t=getTranformationMatrix();
+	Matrix t=getTransformationMatrix();
 	vector<int> points;
 	int s;
 	cout<<"\nEnter scaling factor: ";
@@ -125,6 +125,39 @@ void scale(Matrix m[],int n,vector<int> p){
 		m[i].print();
 	}
 	plot(p,points);
+}
+
+void reflect(Matrix m[],int n,vector<int> p){
+	// https://www.onlinemath4all.com/reflection-transformation-matrix.html#ContentColumn
+	Matrix t=getTransformationMatrix();
+	Again:	// switch case default
+	cout<<"\n\nReflect About:\n\n1. X-Axis\n2. Y-Axis\n3. Line Y=X\n4. Line Y=-X\n5. Origin\n\nEnter Choice: ";
+	int choice; cin>>choice;
+	vector <int> points;
+	switch(choice){
+		case 1:
+			t.arr[1][1]=-1; break;
+		case 2:
+			t.arr[0][0]=-1; break;
+		case 3:
+			t.arr[0][0]=0; t.arr[0][1]=1; t.arr[1][0]=1; t.arr[1][1]=0; break;
+		case 4:
+			t.arr[0][0]=0; t.arr[0][1]=-1; t.arr[1][0]=-1; t.arr[1][1]=0; break;
+		case 5:
+			t.arr[0][0]=-1; t.arr[1][1]=-1; break;
+		default:
+			goto Again; break;
+	}
+	cout<<"Transformation Matrix:\n";
+	t.print();
+	cout<<"RESULT:\n";
+	for(int i=0;i<n;i++){
+		m[i]=Matrix::multiply(m[i],t);
+		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+		cout<<"Vertex "<<i+1<<": ";
+		m[i].print();
+	}
+	plot(p,points);	
 }
 
 int main(){
@@ -149,18 +182,17 @@ int main(){
 	}
 	
 	// menu
-	cout<<"\n1. Translate\n2. Rotate\n3. Scale\n\nEnter Choice: ";
+	cout<<"\n1. Translate\n2. Rotate\n3. Scale\n4. Reflection\n\nEnter Choice: ";
 	cin>>choice;
 	switch(choice){
 		case 1:
-			translate(m,n,points);
-			break;
+			translate(m,n,points); break;
 		case 2:
-			rotate(m,n,points);
-			break;
+			rotate(m,n,points); break;
 		case 3:
-			scale(m,n,points);
-			break;
+			scale(m,n,points); break;
+		case 4:
+			reflect(m,n,points); break;
 		default:
 			break;
 	}
@@ -200,3 +232,13 @@ int main(){
 //200
 //3
 //2
+
+// reflection
+//3
+//300
+//300
+//400
+//400
+//200
+//400
+//4
