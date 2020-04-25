@@ -39,32 +39,33 @@ class Matrix{
 		}
 };
 
-void plot(vector<int> arr1,vector<int> arr2){
-	arr1.push_back(arr1[0]);
-	arr1.push_back(arr1[1]);
-	arr2.push_back(arr2[0]);
-	arr2.push_back(arr2[1]);
-	int gd=DETECT,gm;
-	initgraph(&gd,&gm,"C:\\TC\\BGI");
-	setcolor(GREEN);
-	drawpoly(arr1.size()/2,arr1.data());
-	getch();
-	cleardevice();
-	setcolor(GREEN);
-	drawpoly(arr2.size()/2,arr2.data());
-	getch();
-	closegraph();
-}
+//void plot(vector<int> arr1,vector<int> arr2){
+//	arr1.push_back(arr1[0]);
+//	arr1.push_back(arr1[1]);
+//	arr2.push_back(arr2[0]);
+//	arr2.push_back(arr2[1]);
+//	int gd=DETECT,gm;
+//	initgraph(&gd,&gm,"C:\\TC\\BGI");
+//	setcolor(GREEN);
+//	drawpoly(arr1.size()/2,arr1.data());
+//	getch();
+//	cleardevice();
+//	setcolor(GREEN);
+//	drawpoly(arr2.size()/2,arr2.data());
+//	getch();
+//	closegraph();
+//}
 
 Matrix getTransformationMatrix(){
-	Matrix t(3,3);
-	float arr[][3]={
-		{1,0,0},
-		{0,1,0},
-		{0,0,1}
+	Matrix t(4,4);
+	float arr[][4]={
+		{1,0,0,0},
+		{0,1,0,0},
+		{0,0,1,0},
+		{0,0,0,1},
 	};
-	for(int i=0;i<3;i++)
-		for(int j=0;j<3;j++)
+	for(int i=0;i<4;i++)
+		for(int j=0;j<4;j++)
 			t.arr[i][j]=arr[i][j];
 	return t;
 }
@@ -73,9 +74,11 @@ void translate(Matrix m[],int n,vector<int> p){
 	Matrix t=getTransformationMatrix();
 	vector<int> points;
 	cout<<"\nEnter translation for x-coordinates: ";
-	cin>>t.arr[2][0];
+	cin>>t.arr[3][0];
 	cout<<"Enter translation for y-coordinates: ";
-	cin>>t.arr[2][1];
+	cin>>t.arr[3][1];
+	cout<<"Enter translation for z-coordinates: ";
+	cin>>t.arr[3][2];
 	cout<<"Transformation Matrix:\n";
 	t.print();
 	cout<<"RESULT:\n";
@@ -85,66 +88,31 @@ void translate(Matrix m[],int n,vector<int> p){
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-	plot(p,points);
+//	plot(p,points);
 }
 
 void rotate(Matrix m[],int n,vector<int> p){
 	Matrix t=getTransformationMatrix();
 	vector<int> points;
+	Again:	// switch case default
+	cout<<"\n\nRotate About:\n\n1. X-Axis\n2. Y-Axis\n3. Z-Axis\n\nEnter Choice: ";
+	int choice; cin>>choice;
 	int r;
 	cout<<"\nEnter angle of rotation: ";
 	cin>>r;
-	t.arr[0][0]=cos(r); t.arr[0][1]=sin(r);
-	t.arr[1][0]=-1*sin(r); t.arr[1][1]=cos(r);
-	cout<<"Transformation Matrix:\n";
-	t.print();
-	cout<<"RESULT:\n";
-	for(int i=0;i<n;i++){
-		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
-		cout<<"Vertex "<<i+1<<": ";
-		m[i].print();
-	}
-	plot(p,points);
-}
-
-void scale(Matrix m[],int n,vector<int> p){
-	Matrix t=getTransformationMatrix();
-	vector<int> points;
-	float sx,sy;
-	cout<<"\nEnter scaling factors sx,sy: ";
-	cin>>sx>>sy;
-	t.arr[0][0]=sx; t.arr[1][1]=sy;
-	cout<<"Transformation Matrix:\n";
-	t.print();
-	cout<<"RESULT:\n";
-	for(int i=0;i<n;i++){
-		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
-		cout<<"Vertex "<<i+1<<": ";
-		m[i].print();
-	}
-	plot(p,points);
-}
-
-void reflect(Matrix m[],int n,vector<int> p){
-	// https://www.onlinemath4all.com/reflection-transformation-matrix.html#ContentColumn
-	Matrix t=getTransformationMatrix();
-	Again:	// switch case default
-	cout<<"\n\nReflect About:\n\n1. X-Axis\n2. Y-Axis\n3. Line Y=X\n4. Line Y=-X\n5. Origin\n\nEnter Choice: ";
-	int choice; cin>>choice;
-	vector <int> points;
 	switch(choice){
 		case 1:
-			t.arr[1][1]=-1; break;
+			t.arr[1][1] = cos(r); t.arr[1][2] = -sin(r);
+			t.arr[2][1] = sin(r); t.arr[2][2] = cos(r);
+			break;
 		case 2:
-			t.arr[0][0]=-1; break;
+			t.arr[0][0] = cos(r); t.arr[0][2] = sin(r);
+			t.arr[2][0] = -sin(r); t.arr[2][2] = cos(r);
+			break;
 		case 3:
-			t.arr[0][0]=0; t.arr[0][1]=1; t.arr[1][0]=1; t.arr[1][1]=0; break;
-		case 4:
-			t.arr[0][0]=0; t.arr[0][1]=-1; t.arr[1][0]=-1; t.arr[1][1]=0; break;
-		case 5:
-			t.arr[0][0]=-1; t.arr[1][1]=-1; break;
+			t.arr[0][0] = cos(r); t.arr[0][1] = -sin(r);
+			t.arr[1][0] = sin(r); t.arr[1][1] = cos(r);
+			break;
 		default:
 			goto Again; break;
 	}
@@ -157,7 +125,60 @@ void reflect(Matrix m[],int n,vector<int> p){
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-	plot(p,points);	
+//	plot(p,points);
+}
+
+void scale(Matrix m[],int n,vector<int> p){
+	Matrix t=getTransformationMatrix();
+	vector<int> points;
+	int sx,sy,sz;
+	cout<<"\nEnter scaling factors sx,sy,sz: ";
+	cin>>sx>>sy>>sz;
+	t.arr[0][0]=sx; t.arr[1][1]=sy; t.arr[2][2]=sz;
+	cout<<"Transformation Matrix:\n";
+	t.print();
+	cout<<"RESULT:\n";
+	for(int i=0;i<n;i++){
+		m[i]=Matrix::multiply(m[i],t);
+		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+		cout<<"Vertex "<<i+1<<": ";
+		m[i].print();
+	}
+//	plot(p,points);
+}
+
+void reflect(Matrix m[],int n,vector<int> p){
+	Matrix t=getTransformationMatrix();
+	Again:	// switch case default
+	cout<<"\n\nReflect About:\n\n1. X-Axis\n2. Y-Axis\n3. Z-Axis\n4. XY Plane\n5. YZ Plane\n6. XZ Plane\n\nEnter Choice: ";
+	int choice; cin>>choice;
+	vector <int> points;
+	switch(choice){
+		case 1:
+			t.arr[1][1]=-1; t.arr[2][2]=-1; break;
+		case 2:
+			t.arr[0][0]=-1; t.arr[2][2]=-1; break;
+		case 3:
+			t.arr[1][1]=-1; t.arr[2][2]=-1; break;
+		case 4:
+			t.arr[2][2]=-1; break;
+		case 5:
+			t.arr[0][0]=-1; break;
+		case 6:
+			t.arr[1][1]=-1; break;
+		default:
+			goto Again; break;
+	}
+	cout<<"Transformation Matrix:\n";
+	t.print();
+	cout<<"RESULT:\n";
+	for(int i=0;i<n;i++){
+		m[i]=Matrix::multiply(m[i],t);
+		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+		cout<<"Vertex "<<i+1<<": ";
+		m[i].print();
+	}
+//	plot(p,points);	
 }
 
 int main(){
@@ -167,12 +188,14 @@ int main(){
 	Matrix m[n];
 	vector<int> points;
 	for(int i=0;i<n;i++){
-		m[i]=Matrix(1,3);
+		m[i]=Matrix(1,4);
 		cout<<"\nEnter x-coordinate of vertex "<<i+1<<": ";
 		cin>>m[i].arr[0][0];	points.push_back(m[i].arr[0][0]);
 		cout<<"Enter y-coordinate of vertex "<<i+1<<": ";
 		cin>>m[i].arr[0][1];	points.push_back(m[i].arr[0][1]);
-		m[i].arr[0][2]=1;
+		cout<<"Enter z-coordinate of vertex "<<i+1<<": ";
+		cin>>m[i].arr[0][2];
+		m[i].arr[0][3]=1;
 	}
 	int choice;
 	cout<<"\nPoints are:\n";
@@ -181,64 +204,25 @@ int main(){
 		m[i].print();
 	}
 	
-	// menu
-	cout<<"\n1. Translate\n2. Rotate\n3. Scale\n4. Reflection\n\nEnter Choice: ";
-	cin>>choice;
-	switch(choice){
-		case 1:
-			translate(m,n,points); break;
-		case 2:
-			rotate(m,n,points); break;
-		case 3:
-			scale(m,n,points); break;
-		case 4:
-			reflect(m,n,points); break;
-		default:
-			break;
-	}
+	char ch;
+	do{
+		// menu
+		cout<<"\n1. Translate\n2. Rotate\n3. Scale\n4. Reflection\n\nEnter Choice: ";
+		cin>>choice;
+		switch(choice){
+			case 1:
+				translate(m,n,points); break;
+			case 2:
+				rotate(m,n,points); break;
+			case 3:
+				scale(m,n,points); break;
+			case 4:
+				reflect(m,n,points); break;
+			default:
+				break;
+		}
+		cout<<"\n\nDo you want to perform more transformations? (y/n): ";
+		cin>>ch;
+	}while(ch=='y'||ch=='Y');
 	return 0;
 }
-//input
-//translate
-//3
-//100
-//100
-//50
-//200
-//150
-//200
-//1
-//50
-//-50
-
-//rotate
-//3
-//100.05
-//100.5
-//50.5
-//200.5
-//150.5
-//200.5
-//2
-//0.785398
-
-//scale
-//3
-//100
-//100
-//50
-//200
-//150
-//200
-//3
-//2
-
-// reflection
-//3
-//300
-//300
-//400
-//400
-//200
-//400
-//4
