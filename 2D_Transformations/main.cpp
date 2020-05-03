@@ -91,9 +91,10 @@ void translate(Matrix m[],int n,vector<int> p){
 void rotate(Matrix m[],int n,vector<int> p){
 	Matrix t=getTransformationMatrix();
 	vector<int> points;
-	int r;
+	float r;
 	cout<<"\nEnter angle of rotation: ";
 	cin>>r;
+	r=r*3.14/180;
 	t.arr[0][0]=cos(r); t.arr[0][1]=sin(r);
 	t.arr[1][0]=-1*sin(r); t.arr[1][1]=cos(r);
 	cout<<"Transformation Matrix:\n";

@@ -39,22 +39,14 @@ class Matrix{
 		}
 };
 
-//void plot(vector<int> arr1,vector<int> arr2){
-//	arr1.push_back(arr1[0]);
-//	arr1.push_back(arr1[1]);
-//	arr2.push_back(arr2[0]);
-//	arr2.push_back(arr2[1]);
-//	int gd=DETECT,gm;
-//	initgraph(&gd,&gm,"C:\\TC\\BGI");
-//	setcolor(GREEN);
-//	drawpoly(arr1.size()/2,arr1.data());
-//	getch();
-//	cleardevice();
-//	setcolor(GREEN);
-//	drawpoly(arr2.size()/2,arr2.data());
-//	getch();
-//	closegraph();
-//}
+void plot(vector<int> arr){
+	int gd=DETECT,gm;
+	initgraph(&gd,&gm,"C:\\TC\\BGI");
+	setcolor(GREEN);
+	drawpoly(arr.size()/2,arr.data());
+	getch();
+	closegraph();
+}
 
 Matrix getTransformationMatrix(){
 	Matrix t(4,4);
@@ -70,9 +62,9 @@ Matrix getTransformationMatrix(){
 	return t;
 }
 
-void translate(Matrix m[],int n,vector<int> p){
+void translate(Matrix m[],int n){
 	Matrix t=getTransformationMatrix();
-	vector<int> points;
+	
 	cout<<"\nEnter translation for x-coordinates: ";
 	cin>>t.arr[3][0];
 	cout<<"Enter translation for y-coordinates: ";
@@ -84,53 +76,42 @@ void translate(Matrix m[],int n,vector<int> p){
 	cout<<"RESULT:\n";
 	for(int i=0;i<n;i++){
 		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-//	plot(p,points);
+
 }
 
-void rotate(Matrix m[],int n,vector<int> p){
+void rotate(Matrix m[],int n,int choice,float r){
 	Matrix t=getTransformationMatrix();
-	vector<int> points;
-	Again:	// switch case default
-	cout<<"\n\nRotate About:\n\n1. X-Axis\n2. Y-Axis\n3. Z-Axis\n\nEnter Choice: ";
-	int choice; cin>>choice;
-	int r;
-	cout<<"\nEnter angle of rotation: ";
-	cin>>r;
 	switch(choice){
 		case 1:
-			t.arr[1][1] = cos(r); t.arr[1][2] = -sin(r);
-			t.arr[2][1] = sin(r); t.arr[2][2] = cos(r);
+			t.arr[1][1] = cos(r); t.arr[1][2] = sin(r);
+			t.arr[2][1] = -sin(r); t.arr[2][2] = cos(r);
 			break;
 		case 2:
-			t.arr[0][0] = cos(r); t.arr[0][2] = sin(r);
-			t.arr[2][0] = -sin(r); t.arr[2][2] = cos(r);
+			t.arr[0][0] = cos(r); t.arr[0][2] = -sin(r);
+			t.arr[2][0] = sin(r); t.arr[2][2] = cos(r);
 			break;
 		case 3:
-			t.arr[0][0] = cos(r); t.arr[0][1] = -sin(r);
-			t.arr[1][0] = sin(r); t.arr[1][1] = cos(r);
+			t.arr[0][0] = cos(r); t.arr[0][1] = sin(r);
+			t.arr[1][0] = -sin(r); t.arr[1][1] = cos(r);
 			break;
 		default:
-			goto Again; break;
+			cout<<"\nWrong Axis Choice"; return;
 	}
 	cout<<"Transformation Matrix:\n";
 	t.print();
 	cout<<"RESULT:\n";
 	for(int i=0;i<n;i++){
 		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-//	plot(p,points);
 }
 
-void scale(Matrix m[],int n,vector<int> p){
+void scale(Matrix m[],int n){
 	Matrix t=getTransformationMatrix();
-	vector<int> points;
 	int sx,sy,sz;
 	cout<<"\nEnter scaling factors sx,sy,sz: ";
 	cin>>sx>>sy>>sz;
@@ -140,19 +121,16 @@ void scale(Matrix m[],int n,vector<int> p){
 	cout<<"RESULT:\n";
 	for(int i=0;i<n;i++){
 		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-//	plot(p,points);
 }
 
-void reflect(Matrix m[],int n,vector<int> p){
+void reflect(Matrix m[],int n){
 	Matrix t=getTransformationMatrix();
 	Again:	// switch case default
 	cout<<"\n\nReflect About:\n\n1. X-Axis\n2. Y-Axis\n3. Z-Axis\n4. XY Plane\n5. YZ Plane\n6. XZ Plane\n\nEnter Choice: ";
 	int choice; cin>>choice;
-	vector <int> points;
 	switch(choice){
 		case 1:
 			t.arr[1][1]=-1; t.arr[2][2]=-1; break;
@@ -174,25 +152,103 @@ void reflect(Matrix m[],int n,vector<int> p){
 	cout<<"RESULT:\n";
 	for(int i=0;i<n;i++){
 		m[i]=Matrix::multiply(m[i],t);
-		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
 		cout<<"Vertex "<<i+1<<": ";
 		m[i].print();
 	}
-//	plot(p,points);	
 }
 
+void orthographic(Matrix m[],int n,char plane){
+	Matrix t=getTransformationMatrix();
+	vector<int> points;
+	cout<<"Result:\n\n";
+	switch(plane){
+		case 'x':
+			t.arr[0][0]=0;
+			for(int i=0;i<n;i++){
+				m[i]=Matrix::multiply(m[i],t);
+				cout<<"Vertex "<<i+1<<": ";
+				points.push_back(m[i].arr[0][1]); points.push_back(m[i].arr[0][2]);
+				m[i].print();
+			}
+			break;
+		case 'y':
+			t.arr[1][1]=0;
+			for(int i=0;i<n;i++){
+				m[i]=Matrix::multiply(m[i],t);
+				cout<<"Vertex "<<i+1<<": ";
+				points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][2]);
+				m[i].print();
+			}
+			break;
+		case 'z':
+			t.arr[2][2]=0;
+			for(int i=0;i<n;i++){
+				m[i]=Matrix::multiply(m[i],t);
+				cout<<"Vertex "<<i+1<<": ";
+				points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+				m[i].print();
+			}
+			break;
+	}
+	plot(points);
+}
+
+void axonometric(Matrix m[],int n,float phi,float theta){
+	rotate(m,n,2,phi);		// about y-axis
+	rotate(m,n,1,theta);	// about x-axis
+	orthographic(m,n,'z');	// project onto z=0 plane
+}
+
+void oblique(Matrix m[],int n,float f,float alpha){
+	Matrix t=getTransformationMatrix();
+	float a=f*cos(alpha);
+	float b=f*sin(alpha);
+	t.arr[2][2]=0;
+	t.arr[2][0]=-a;
+	t.arr[2][1]=-b;
+	vector<int> points;
+	for(int i=0;i<n;i++){
+		m[i]=Matrix::multiply(m[i],t);
+		cout<<"Vertex "<<i+1<<": ";
+		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+		m[i].print();
+	}
+	plot(points);
+}
+
+void perspective(Matrix m[],int n,float x,float y,float z){
+	Matrix t=getTransformationMatrix();
+	t.arr[0][3]=x;
+	t.arr[1][3]=y;
+	t.arr[2][3]=z;
+	t.arr[2][2]=0;
+	cout<<"\nTransformation Matrix:\n";
+	t.print();
+	vector<int> points;
+	for(int i=0;i<n;i++){
+		m[i]=Matrix::multiply(m[i],t);
+		for(int j=0;j<4;j++)
+			m[i].arr[0][j]/=m[i].arr[0][3];
+		cout<<"Vertex "<<i+1<<": ";
+		points.push_back(m[i].arr[0][0]); points.push_back(m[i].arr[0][1]);
+		m[i].print();
+	}
+	plot(points);
+}
+
+// *************************************************************************************
 int main(){
 	int n;
 	cout<<"Enter number of vertices: ";
 	cin>>n;
 	Matrix m[n];
-	vector<int> points;
+	
 	for(int i=0;i<n;i++){
 		m[i]=Matrix(1,4);
 		cout<<"\nEnter x-coordinate of vertex "<<i+1<<": ";
-		cin>>m[i].arr[0][0];	points.push_back(m[i].arr[0][0]);
+		cin>>m[i].arr[0][0];	
 		cout<<"Enter y-coordinate of vertex "<<i+1<<": ";
-		cin>>m[i].arr[0][1];	points.push_back(m[i].arr[0][1]);
+		cin>>m[i].arr[0][1];	
 		cout<<"Enter z-coordinate of vertex "<<i+1<<": ";
 		cin>>m[i].arr[0][2];
 		m[i].arr[0][3]=1;
@@ -211,18 +267,104 @@ int main(){
 		cin>>choice;
 		switch(choice){
 			case 1:
-				translate(m,n,points); break;
+				translate(m,n); break;
 			case 2:
-				rotate(m,n,points); break;
+				cout<<"\n\nRotate About:\n\n1. X-Axis\n2. Y-Axis\n3. Z-Axis\n\nEnter Choice: ";
+				int axis_choice; cin>>axis_choice;
+				float r;
+				cout<<"\nEnter angle of rotation: ";
+				cin>>r;
+				r=r*3.14/180;	// convert to radians
+				rotate(m,n,axis_choice,r); break;
 			case 3:
-				scale(m,n,points); break;
+				scale(m,n); break;
 			case 4:
-				reflect(m,n,points); break;
+				reflect(m,n); break;
 			default:
 				break;
 		}
 		cout<<"\n\nDo you want to perform more transformations? (y/n): ";
 		cin>>ch;
 	}while(ch=='y'||ch=='Y');
+	
+	// projection menu
+	cout<<"\n\n1. Orthographic onto x=0 plane\n2. Orthographic onto y=0 plane\n3. Orthographic onto z=0 plane\n4. Trimetric\n5. Dimetric\n6. Isometric\n7. Cavalier\n8. Cabinet\n9. Single Point Perspective\n10. Two Point Perspective\n11. Three Point Perspesctive\n\nEnter Choice: ";
+	cin>>choice;
+	float phi,theta;
+	switch(choice){
+		// orthographic
+		case 1:
+			orthographic(m,n,'x'); break;
+		case 2:
+			orthographic(m,n,'y'); break;
+		case 3:
+			orthographic(m,n,'z'); break;
+		// axonometric
+		case 4:
+			cout<<"Enter angle of rotation about y-axis: ";
+			cin>>phi;
+			cout<<"Enter angle of rotation about x-axis: ";
+			cin>>theta;
+			phi*=3.14/180; theta*=3.14/180;
+			axonometric(m,n,phi,theta); break;
+		case 5:
+			cout<<"Enter value of fz [0,1]: ";
+			float fz; cin>>fz;
+			phi=asin(fz/pow(2,0.5));
+			theta=asin(fz/(pow(2-pow(fz,2),0.5)));
+			axonometric(m,n,phi,theta); break;
+		case 6:
+			phi=45*3.14/180;
+			theta=35.26*3.14/180;
+			axonometric(m,n,phi,theta); break;
+		// oblique
+		case 7:
+			cout<<"Enter angle between horizontal and projected z-axis: ";
+			cin>>theta;
+			oblique(m,n,1,theta*3.14/180);
+			break;
+		case 8:
+			cout<<"Enter angle between horizontal and projected z-axis: ";
+			cin>>theta;
+			oblique(m,n,0.5,theta*3.14/180);
+			break;
+		// perpective
+		case 9:
+			perspective(m,n,0,0,0.05);
+			break;
+		case 10:
+			perspective(m,n,0.001,0.001,0);
+			break;
+		case 11:
+			perspective(m,n,0.001,0.001,0.001);
+			break;
+		default:
+			break;
+	}
+	
 	return 0;
 }
+
+// cube with one edge removed
+//10
+//100 100 200
+//200 100 200
+//200 150 200
+//150 200 200
+//100 200 200
+//100 100 100
+//200 100 100
+//200 200 100
+//100 200 100
+//200 200 150
+
+// cube
+//8
+//100 100 200
+//200 100 200
+//200 200 200
+//100 200 200
+//100 200 100
+//200 200 100
+//200 100 100
+//100 100 100

@@ -29,21 +29,13 @@ int main(){
 	initgraph(&gd,&gm,"C:\\TC\\BGI");
 	putpixel(x1,y1,RED);
 	
-	
-//	ofstream fout;
-//	fout.open("q1.csv");
-//	fout<<"x1="<<x1<<",y1="<<y1<<",x2="<<x2<<",y2="<<y2<<"\n";
-//	
-//	fout<<x<<","<<y<<"\n";
+
 	for(int i=0;i<step;i++){
 		x+=Xinc; y+=Yinc;
 		putpixel(x,y,RED);
-//		fout<<x<<","<<y<<"\n";
 	}
 	
 	getch();
 	closegraph();
 	return 0;
 }
-
-
